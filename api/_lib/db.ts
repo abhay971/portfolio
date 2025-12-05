@@ -1,8 +1,14 @@
-import { createClient } from '@vercel/postgres';
+import { Pool } from 'pg';
 
-// Use createClient for Prisma Postgres connection strings
-const client = createClient({
+// Create a connection pool for Prisma Postgres
+const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  max: 1, // Limit connections in serverless
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
 export interface ContactSubmission {
@@ -40,11 +46,10 @@ export async function createContactSubmission(
   ipAddress?: string,
   userAgent?: string
 ): Promise<number> {
-  const result = await client.sql`
-    INSERT INTO contact_submissions (name, email, message, ip_address, user_agent)
-    VALUES (${name}, ${email}, ${message}, ${ipAddress || null}, ${userAgent || null})
-    RETURNING id
-  `;
+  const result = await pool.query(
+    'INSERT INTO contact_submissions (name, email, message, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+    [name, email, message, ipAddress || null, userAgent || null]
+  );
 
   return result.rows[0].id;
 }
@@ -53,11 +58,10 @@ export async function createContactSubmission(
  * Get admin user by username
  */
 export async function getAdminByUsername(username: string): Promise<AdminUser | null> {
-  const result = await client.sql<AdminUser>`
-    SELECT id, username, password_hash as "passwordHash", email, created_at as "createdAt", last_login as "lastLogin"
-    FROM admin_users
-    WHERE username = ${username}
-  `;
+  const result = await pool.query<AdminUser>(
+    'SELECT id, username, password_hash as "passwordHash", email, created_at as "createdAt", last_login as "lastLogin" FROM admin_users WHERE username = $1',
+    [username]
+  );
 
   return result.rows[0] || null;
 }
@@ -66,11 +70,10 @@ export async function getAdminByUsername(username: string): Promise<AdminUser | 
  * Update admin last login timestamp
  */
 export async function updateAdminLastLogin(userId: number): Promise<void> {
-  await client.sql`
-    UPDATE admin_users
-    SET last_login = CURRENT_TIMESTAMP
-    WHERE id = ${userId}
-  `;
+  await pool.query(
+    'UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
+    [userId]
+  );
 }
 
 /**
@@ -116,7 +119,7 @@ export async function getContactSubmissions(options: {
 
   // Get total count
   const countQuery = `SELECT COUNT(*) as count FROM contact_submissions ${whereClause}`;
-  const countResult = await client.query(countQuery, params);
+  const countResult = await pool.query(countQuery, params);
   const total = parseInt(countResult.rows[0].count);
 
   // Get submissions
@@ -142,7 +145,7 @@ export async function getContactSubmissions(options: {
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
   `;
 
-  const result = await client.query(query, params);
+  const result = await pool.query(query, params);
 
   return {
     submissions: result.rows as ContactSubmission[],
@@ -154,24 +157,10 @@ export async function getContactSubmissions(options: {
  * Get a single contact submission by ID
  */
 export async function getContactSubmissionById(id: number): Promise<ContactSubmission | null> {
-  const result = await client.sql<ContactSubmission>`
-    SELECT
-      id,
-      name,
-      email,
-      message,
-      ip_address as "ipAddress",
-      user_agent as "userAgent",
-      submitted_at as "submittedAt",
-      is_read as "isRead",
-      is_archived as "isArchived",
-      read_at as "readAt",
-      notes,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
-    FROM contact_submissions
-    WHERE id = ${id}
-  `;
+  const result = await pool.query<ContactSubmission>(
+    'SELECT id, name, email, message, ip_address as "ipAddress", user_agent as "userAgent", submitted_at as "submittedAt", is_read as "isRead", is_archived as "isArchived", read_at as "readAt", notes, created_at as "createdAt", updated_at as "updatedAt" FROM contact_submissions WHERE id = $1',
+    [id]
+  );
 
   return result.rows[0] || null;
 }
@@ -238,6 +227,6 @@ export async function updateContactSubmission(
       updated_at as "updatedAt"
   `;
 
-  const result = await client.query(query, params);
+  const result = await pool.query(query, params);
   return result.rows[0] || null;
 }
