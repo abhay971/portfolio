@@ -37,21 +37,6 @@ function checkRateLimit(ip: string): boolean {
 }
 
 /**
- * Clean up expired rate limit records (run periodically)
- */
-function cleanupRateLimitStore() {
-  const now = Date.now();
-  for (const [ip, record] of rateLimitStore.entries()) {
-    if (now > record.resetTime) {
-      rateLimitStore.delete(ip);
-    }
-  }
-}
-
-// Clean up every 5 minutes
-setInterval(cleanupRateLimitStore, 5 * 60 * 1000);
-
-/**
  * Contact form submission endpoint
  */
 export default async function handler(
@@ -130,9 +115,17 @@ export default async function handler(
 
   } catch (error) {
     console.error('Contact form submission error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      type: typeof error,
+    });
     return res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to submit your message. Please try again later.',
+      debug: process.env.NODE_ENV === 'development' ? {
+        error: error instanceof Error ? error.message : String(error),
+      } : undefined,
     });
   }
 }
