@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a1510;
+            color: #fff;
+        }
+        .test-section {
+            background: #1a2520;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #a3e635;
+        }
+        button {
+            background: #a3e635;
+            color: #0a1510;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #84cc16;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #000;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { border-left: 4px solid #22c55e; }
+        .error { border-left: 4px solid #ef4444; }
+        h2 { color: #a3e635; }
+    </style>
+</head>
+<body>
+    <h1>Portfolio API Test Page</h1>
+
+    <div class="test-section">
+        <h2>Test 1: Environment Check</h2>
+        <button onclick="testEnvironment()">Test /api/test</button>
+        <div id="env-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Contact Form Submission</h2>
+        <button onclick="testContact()">Test /api/contact</button>
+        <div id="contact-result"></div>
+    </div>
+
+    <script>
+        async function testEnvironment() {
+            const result = document.getElementById('env-result');
+            result.innerHTML = '<div class="result">Testing...</div>';
+
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+
+                result.innerHTML = `
+                    <div class="result success">
+                        <strong>Status: ${response.status}</strong>
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        <strong>Error:</strong>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testContact() {
+            const result = document.getElementById('contact-result');
+            result.innerHTML = '<div class="result">Testing...</div>';
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: 'API Test User',
+                        email: 'test@example.com',
+                        message: 'This is a test message from the API test page.'
+                    })
+                });
+
+                const data = await response.json();
+
+                result.innerHTML = `
+                    <div class="result ${response.ok ? 'success' : 'error'}">
+                        <strong>Status: ${response.status}</strong>
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        <strong>Error:</strong>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
