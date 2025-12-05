@@ -15,7 +15,9 @@ export interface ContactNotificationData {
  */
 export async function sendContactNotification(data: ContactNotificationData): Promise<void> {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-  const fromEmail = process.env.FROM_EMAIL || 'Portfolio Contact <noreply@yourdomain.com>';
+  // Use Resend's onboarding email for development/testing
+  // For production, set FROM_EMAIL to your verified domain email
+  const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
   try {
     await resend.emails.send({
