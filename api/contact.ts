@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { contactSchema } from './_lib/validation.ts';
-import { createContactSubmission } from './_lib/db.ts';
-import { sendContactNotification } from './_lib/email.ts';
-import { getClientIp } from './_lib/auth.ts';
+import { contactSchema } from './_lib/validation.js';
+import { createContactSubmission } from './_lib/db.js';
+import { sendContactNotification } from './_lib/email.js';
+import { getClientIp } from './_lib/auth.js';
 
 // Simple in-memory rate limiting (works for single instance, use Redis for production)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();

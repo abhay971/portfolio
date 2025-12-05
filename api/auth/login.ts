@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { loginSchema } from '../_lib/validation.ts';
-import { getAdminByUsername, updateAdminLastLogin } from '../_lib/db.ts';
-import { comparePassword, generateToken } from '../_lib/auth.ts';
+import { loginSchema } from '../_lib/validation.js';
+import { getAdminByUsername, updateAdminLastLogin } from '../_lib/db.js';
+import { comparePassword, generateToken } from '../_lib/auth.js';
 
 /**
  * Admin login endpoint
