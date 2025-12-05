@@ -21,7 +21,7 @@ const Header = () => {
           transition={{ duration: 0.2 }}
         >
           <span
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-white font-black"
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl uppercase text-white font-black"
             style={{
               fontFamily: "Impact, 'Arial Black', sans-serif",
               letterSpacing: '0.03em',
@@ -31,7 +31,7 @@ const Header = () => {
             ABHAY
           </span>
           <span
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-white font-black"
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl uppercase text-white font-black"
             style={{
               fontFamily: "Impact, 'Arial Black', sans-serif",
               letterSpacing: '0.03em',
@@ -117,10 +117,10 @@ const Header = () => {
             </button>
 
             {/* Menu Content Container */}
-            <div className="relative z-10 h-full flex items-center justify-center">
+            <div className="relative z-10 h-full flex items-center justify-center py-16 sm:py-20">
               <div className="max-w-4xl mx-auto px-6 sm:px-8">
                 {/* Navigation Links */}
-                <nav className="flex flex-col items-center gap-4 md:gap-6 mb-12">
+                <nav className="flex flex-col items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8 md:mb-12">
                   {['HOME', 'ABOUT', 'PROJECTS', 'EXPERIENCE', 'CONTACT'].map((item, index) => (
                     <div
                       key={item}
@@ -129,11 +129,11 @@ const Header = () => {
                       {/* Number Prefix */}
                       <a
                         href={`#${item.toLowerCase()}`}
-                        className="flex items-center gap-6 px-8 py-4"
+                        className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 px-2 sm:px-4 md:px-6 lg:px-8 py-1 sm:py-2 md:py-3 lg:py-4"
                         onClick={() => setMenuOpen(false)}
                       >
                         <span
-                          className="text-2xl md:text-3xl font-bold text-lime-400/40 group-hover:text-lime-400 transition-colors duration-300"
+                          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-lime-400/40 group-hover:text-lime-400 transition-colors duration-300"
                           style={{
                             fontFamily: "'Bebas Neue', sans-serif",
                           }}
@@ -142,7 +142,7 @@ const Header = () => {
                         </span>
 
                         <span
-                          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase text-white group-hover:text-lime-400 transition-colors duration-300"
+                          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold uppercase text-white group-hover:text-lime-400 transition-colors duration-300"
                           style={{
                             fontFamily: "'Bebas Neue', sans-serif",
                             letterSpacing: '0.05em',
@@ -159,21 +159,21 @@ const Header = () => {
                 </nav>
 
                 {/* Social Links / Contact Info */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-8 border-t-2 border-lime-400/20">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 pt-4 sm:pt-6 md:pt-8 border-t-2 border-lime-400/20">
                   <a
                     href="mailto:abhayrana3169@gmail.com"
-                    className="text-sm sm:text-base md:text-lg text-gray-400 hover:text-lime-400 transition-colors duration-300 uppercase tracking-wider break-all"
+                    className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 hover:text-lime-400 transition-colors duration-300 uppercase tracking-wider break-all"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   >
                     ABHAYRANA3169@GMAIL.COM
                   </a>
                   <div className="hidden sm:block w-1 h-1 rounded-full bg-lime-400" />
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
                     {['GITHUB', 'LINKEDIN', 'TWITTER'].map((social) => (
                       <a
                         key={social}
                         href={`#${social.toLowerCase()}`}
-                        className="text-sm text-gray-400 hover:text-lime-400 hover:scale-110 transition-all duration-300 uppercase tracking-wider"
+                        className="text-xs sm:text-sm text-gray-400 hover:text-lime-400 hover:scale-110 transition-all duration-300 uppercase tracking-wider"
                         style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         {social}

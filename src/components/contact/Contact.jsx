@@ -8,6 +8,8 @@ const Contact = () => {
     email: '',
     message: '',
   });
+  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -16,10 +18,46 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
+    setStatus('loading');
+    setStatusMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send message');
+      }
+
+      setStatus('success');
+      setStatusMessage(data.message || 'Thank you for your message! I will get back to you soon.');
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+      });
+
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setStatus('idle');
+        setStatusMessage('');
+      }, 5000);
+
+    } catch (error) {
+      setStatus('error');
+      setStatusMessage(error.message || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -298,32 +336,110 @@ const Contact = () => {
                   {/* Submit Button */}
                   <motion.button
                     type="submit"
-                    className="relative w-full px-8 py-5 bg-transparent border-2 border-lime-400 text-lime-400 font-bold uppercase overflow-hidden group/button transition-all duration-500 hover:border-lime-400"
+                    disabled={status === 'loading'}
+                    className={`relative w-full px-8 py-5 bg-transparent border-2 border-lime-400 text-lime-400 font-bold uppercase overflow-hidden group/button transition-all duration-500 hover:border-lime-400 ${
+                      status === 'loading' ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                     style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.15em', fontSize: '1.25rem' }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={status !== 'loading' ? { scale: 1.02 } : {}}
+                    whileTap={status !== 'loading' ? { scale: 0.98 } : {}}
                   >
                     {/* Background slide effect */}
                     <span className="absolute inset-0 bg-lime-400 transform -translate-x-full group-hover/button:translate-x-0 transition-transform duration-500" />
 
                     {/* Button text */}
                     <span className="relative z-10 flex items-center justify-center gap-3 group-hover/button:text-black transition-colors duration-500">
-                      Send Message
-                      <svg
-                        className="w-5 h-5 transform group-hover/button:translate-x-2 transition-transform duration-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
+                      {status === 'loading' ? (
+                        <>
+                          Sending
+                          <svg
+                            className="w-5 h-5 animate-spin"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          Send Message
+                          <svg
+                            className="w-5 h-5 transform group-hover/button:translate-x-2 transition-transform duration-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                          </svg>
+                        </>
+                      )}
                     </span>
                   </motion.button>
+
+                  {/* Status Messages */}
+                  {statusMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`mt-4 p-4 border-2 ${
+                        status === 'success'
+                          ? 'border-lime-400 bg-lime-400/10 text-lime-400'
+                          : 'border-red-500 bg-red-500/10 text-red-400'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {status === 'success' ? (
+                          <svg
+                            className="w-5 h-5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-5 h-5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        )}
+                        <p className="text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {statusMessage}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
                 </form>
               </div>
             </motion.div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/layout/Header';
 import ScrollProgress from './components/layout/ScrollProgress';
@@ -8,24 +9,16 @@ import Hero from './components/hero/Hero';
 import About from './components/about/About';
 import SplashScreen from './components/layout/SplashScreen';
 import ParticleBackground from './components/about/ParticleBackground';
+import AdminPanel from './components/admin/AdminPanel';
+import AdminLogin from './components/admin/AdminLogin';
 
 // Lazy load heavy sections for better initial load
 const Projects = lazy(() => import('./components/projects/Projects'));
 const Experience = lazy(() => import('./components/experience/Experience'));
 const Contact = lazy(() => import('./components/contact/Contact'));
 
-function App() {
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    // Hide splash screen after 2 seconds to allow animations to complete
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+// Main portfolio page component
+function PortfolioPage({ showSplash }) {
   return (
     <>
       {/* Global WebGL Particle Background - Fixed to viewport */}
@@ -60,6 +53,32 @@ function App() {
         {showSplash && <SplashScreen key="splash" />}
       </AnimatePresence>
     </>
+  );
+}
+
+function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Hide splash screen after 2 seconds to allow animations to complete
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Main Portfolio */}
+        <Route path="/" element={<PortfolioPage showSplash={showSplash} />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
