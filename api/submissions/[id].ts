@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import { authMiddleware, type AuthRequest } from '../_lib/auth';
 import { getContactSubmissionById, updateContactSubmission } from '../_lib/db';
@@ -10,19 +10,21 @@ import { updateSubmissionSchema } from '../_lib/validation';
 async function handler(
   req: AuthRequest,
   res: VercelResponse
-) {
+): Promise<void> {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   // Extract ID from URL
   const id = parseInt(req.query.id as string);
   if (isNaN(id)) {
-    return res.status(400).json({ error: 'Invalid submission ID' });
+    res.status(400).json({ error: 'Invalid submission ID' });
+    return;
   }
 
   try {
@@ -31,16 +33,18 @@ async function handler(
       const submission = await getContactSubmissionById(id);
 
       if (!submission) {
-        return res.status(404).json({
+        res.status(404).json({
           error: 'Not found',
           message: 'Submission not found',
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
         submission,
       });
+      return;
     }
 
     // Handle PATCH request
@@ -51,13 +55,14 @@ async function handler(
         validatedData = updateSubmissionSchema.parse(req.body);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'Validation failed',
-            details: error.errors.map(err => ({
+            details: error.issues.map((err: z.ZodIssue) => ({
               field: err.path.join('.'),
               message: err.message,
             })),
           });
+          return;
         }
         throw error;
       }
@@ -66,24 +71,27 @@ async function handler(
       const updatedSubmission = await updateContactSubmission(id, validatedData);
 
       if (!updatedSubmission) {
-        return res.status(404).json({
+        res.status(404).json({
           error: 'Not found',
           message: 'Submission not found',
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
         submission: updatedSubmission,
       });
+      return;
     }
 
     // Method not allowed
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
 
   } catch (error) {
     console.error('Submission operation error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process submission',
     });
