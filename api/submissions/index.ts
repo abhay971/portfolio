@@ -1,6 +1,6 @@
 import type { VercelResponse } from '@vercel/node';
-import { authMiddleware, type AuthRequest } from '../_lib/auth';
-import { getContactSubmissions } from '../_lib/db';
+import { authMiddleware, type AuthRequest } from '../_lib/auth.ts';
+import { getContactSubmissions } from '../_lib/db.ts';
 
 /**
  * Get all contact submissions (paginated) - Admin only

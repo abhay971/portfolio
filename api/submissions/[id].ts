@@ -1,8 +1,8 @@
 import type { VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { authMiddleware, type AuthRequest } from '../_lib/auth';
-import { getContactSubmissionById, updateContactSubmission } from '../_lib/db';
-import { updateSubmissionSchema } from '../_lib/validation';
+import { authMiddleware, type AuthRequest } from '../_lib/auth.ts';
+import { getContactSubmissionById, updateContactSubmission } from '../_lib/db.ts';
+import { updateSubmissionSchema } from '../_lib/validation.ts';
 
 /**
  * Get or update a specific contact submission - Admin only

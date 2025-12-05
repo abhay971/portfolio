@@ -1,4 +1,9 @@
-import { sql } from '@vercel/postgres';
+import { createClient } from '@vercel/postgres';
+
+// Use createClient for Prisma Postgres connection strings
+const client = createClient({
+  connectionString: process.env.POSTGRES_URL,
+});
 
 export interface ContactSubmission {
   id: number;
@@ -35,7 +40,7 @@ export async function createContactSubmission(
   ipAddress?: string,
   userAgent?: string
 ): Promise<number> {
-  const result = await sql`
+  const result = await client.sql`
     INSERT INTO contact_submissions (name, email, message, ip_address, user_agent)
     VALUES (${name}, ${email}, ${message}, ${ipAddress || null}, ${userAgent || null})
     RETURNING id
@@ -48,7 +53,7 @@ export async function createContactSubmission(
  * Get admin user by username
  */
 export async function getAdminByUsername(username: string): Promise<AdminUser | null> {
-  const result = await sql<AdminUser>`
+  const result = await client.sql<AdminUser>`
     SELECT id, username, password_hash as "passwordHash", email, created_at as "createdAt", last_login as "lastLogin"
     FROM admin_users
     WHERE username = ${username}
@@ -61,7 +66,7 @@ export async function getAdminByUsername(username: string): Promise<AdminUser | 
  * Update admin last login timestamp
  */
 export async function updateAdminLastLogin(userId: number): Promise<void> {
-  await sql`
+  await client.sql`
     UPDATE admin_users
     SET last_login = CURRENT_TIMESTAMP
     WHERE id = ${userId}
@@ -111,7 +116,7 @@ export async function getContactSubmissions(options: {
 
   // Get total count
   const countQuery = `SELECT COUNT(*) as count FROM contact_submissions ${whereClause}`;
-  const countResult = await sql.query(countQuery, params);
+  const countResult = await client.query(countQuery, params);
   const total = parseInt(countResult.rows[0].count);
 
   // Get submissions
@@ -137,7 +142,7 @@ export async function getContactSubmissions(options: {
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
   `;
 
-  const result = await sql.query(query, params);
+  const result = await client.query(query, params);
 
   return {
     submissions: result.rows as ContactSubmission[],
@@ -149,7 +154,7 @@ export async function getContactSubmissions(options: {
  * Get a single contact submission by ID
  */
 export async function getContactSubmissionById(id: number): Promise<ContactSubmission | null> {
-  const result = await sql<ContactSubmission>`
+  const result = await client.sql<ContactSubmission>`
     SELECT
       id,
       name,
@@ -233,6 +238,6 @@ export async function updateContactSubmission(
       updated_at as "updatedAt"
   `;
 
-  const result = await sql.query(query, params);
+  const result = await client.query(query, params);
   return result.rows[0] || null;
 }
