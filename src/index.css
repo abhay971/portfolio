@@ -1,0 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Anton&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Custom Colors */
+  --color-portfolio-bg: #f8fafc;
+  --color-portfolio-primary: #3b82f6;
+  --color-portfolio-primary-dark: #2563eb;
+  --color-portfolio-text: #1e293b;
+  --color-portfolio-text-light: #64748b;
+  --color-portfolio-card: #ffffff;
+
+  /* Custom Shadows */
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  --shadow-hero: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+
+  /* Font Family */
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-display: 'Bebas Neue', sans-serif;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Base styles */
+html,
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  min-height: 100vh;
+}
+
+body {
+  background-color: #0a1510;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+#root {
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* Performance optimization: content-visibility for sections */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh;
+  /* GPU acceleration for smooth scrolling */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Dotted background pattern utility */
+.bg-dotted-pattern {
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+}
+
+.bg-dotted {
+  background-size: 20px 20px;
+}
+
+/* Custom responsive adjustments for specific screen sizes */
+
+/* Tablet Portrait (iPad) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Ensure proper spacing on tablets */
+  section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  /* Comfortable reading width */
+  section > div {
+    max-width: 100%;
+  }
+}
+
+/* Tablet Landscape & Small Laptops */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  /* 13-inch MacBook and similar laptops - only target hero h1 */
+  section:first-of-type h1 {
+    font-size: clamp(4rem, 7vw, 6rem) !important;
+    line-height: 0.9 !important;
+  }
+
+  /* Ensure content doesn't feel too spread out */
+  section > div {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Mobile Landscape - Optimize for limited vertical space */
+@media (max-height: 600px) and (orientation: landscape) {
+  /* Reduce vertical padding to fit more content */
+  section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  /* Make hero section less tall */
+  section:first-of-type {
+    min-height: 100vh;
+  }
+
+  /* Compact spacing for mobile landscape */
+  .space-y-12 {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobile devices */
+  body {
+    font-size: 14px;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 374px) {
+  /* Extra small phones (320px-374px) */
+  body {
+    font-size: 13px;
+  }
+
+  /* Ensure all text is legible */
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Marquee Animation for Footer */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Touch interaction improvements */
+* {
+  -webkit-tap-highlight-color: rgba(163, 230, 53, 0.2);
+  -webkit-touch-callout: none;
+}
+
+button, a {
+  -webkit-tap-highlight-color: rgba(163, 230, 53, 0.3);
+}
+
+/* Accessibility improvements */
+
+/* Skip to main content link for screen readers */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1rem 1.5rem;
+  background-color: #a3e635;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%);
+}
+
+/* Enhanced focus states for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #a3e635;
+  outline-offset: 2px;
+}
+
+/* Ensure sufficient color contrast */
+::selection {
+  background-color: #a3e635;
+  color: #000;
+}
+
+::-moz-selection {
+  background-color: #a3e635;
+  color: #000;
+}
+
+/* Loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #0a1510 4%, #1a2520 25%, #0a1510 36%);
+  background-size: 1000px 100%;
+}
+
+/* Prevent content from stretching too wide on large screens */
+
+/* Full HD and above (1920px+) */
+@media (min-width: 1920px) {
+  /* Comfortable max-width for readability */
+  section > div {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Keep hero full-width but center content */
+  section:first-of-type > div {
+    max-width: 100%;
+  }
+}
+
+/* 2K Displays (2560px+) */
+@media (min-width: 2560px) {
+  section > div {
+    max-width: 1800px;
+  }
+
+  /* Increase base font size slightly for better readability */
+  body {
+    font-size: 17px;
+  }
+
+  /* Scale up section padding */
+  section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+/* 4K Displays (3840px+) */
+@media (min-width: 3840px) {
+  section > div {
+    max-width: 2400px;
+  }
+
+  /* Further increase font size for 4K */
+  body {
+    font-size: 18px;
+  }
+
+  /* More generous section padding */
+  section {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
+  /* Ensure images don't become pixelated */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Performance: Optimize animations */
+@media (prefers-reduced-motion: no-preference) {
+  /* Use GPU-accelerated properties for animations */
+  [class*="animate-"],
+  [class*="motion-"] {
+    will-change: transform, opacity;
+  }
+}
+
+/* Print styles for resumes/documentation */
+@media print {
+  /* Hide navigation and non-essential elements */
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Optimize for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Remove animations for print */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Ensure links are visible in print */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  /* Increase contrast for better readability */
+  button,
+  a,
+  input,
+  textarea {
+    border-width: 2px;
+  }
+
+  /* Ensure text has sufficient contrast */
+  body {
+    color: #ffffff;
+  }
+}
